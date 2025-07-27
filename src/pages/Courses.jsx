@@ -6,7 +6,7 @@ import Hero from "../components/Hero"
 
 const Courses = () => {
   return (
-    <div className='px-1 mt-1 sm:px-5 md:px-10 lg:px-20 xl:px-36 2xl:px-28'>
+    <div className='px-1 mt-1 sm:px-5 md:px-10 lg:px-20 xl:px-36 2xl:px-44'>
       <Hero data={courseHeroData}/>
       <h1 className='mt-16 text-lg md:text-2xl xl:text-4xl sm:my-5 font-semibold text-headerColorHover'>Explore Our Courses</h1>
       <ScrollAnimatedSection id="all-course" direction="left">

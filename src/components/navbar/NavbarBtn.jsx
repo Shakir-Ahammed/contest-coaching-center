@@ -1,42 +1,39 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import api from "../../../api/axiosInstance"
 import { useStateContext } from '../../context/ContextProvider';
 import ConfirmModal from "../ConfirmModal"
 import { Link } from 'react-router-dom';
+import Loader from '../Loader';
+import { useLoader } from '../../context/LoaderContext';
 
 const NavbarBtn = (props) => {
   const [click, setClick] = useState(false);
-  const {showConfirm , setShowConfirm, setMsg, user, setUser} = useStateContext();
-
-  useEffect(() => {
-  const savedUser = localStorage.getItem("user");
-
-  if (savedUser && savedUser !== "undefined") {
-    try {
-      const parsed = JSON.parse(savedUser);
-      setUser(parsed);
-    } catch (err) {
-      console.error("Failed to parse saved user from localStorage:", err);
-      localStorage.removeItem("user");
-    }
-  }}, [setUser]);
-
+  const {showConfirm , setShowConfirm, setMsg, user, setUser, msg} = useStateContext();
+  const {loading, setLoading} = useLoader();
 
   const handleLogout = async () => {
     setShowConfirm(true)
-};
+  };
 
   const confirmDelete = async() => {
     try {
-    await api.post("/logout"); // চাইলে token blacklist করো
-  } catch (err) {
-    console.error("Logout error", err);
-  }
-  localStorage.clear();
+    await api.post("/logout");
+    localStorage.clear();
     setUser(null);
     setShowConfirm(false);
-    setMsg("")
-  };
+    setMsg("Logged out successfully");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setMsg("");
+    }, 2000);
+  } catch (err) {
+    console.error("Logout error", err);
+    setMsg("❌ Logout failed. Try again.");
+    setTimeout(() => {
+      setMsg("");
+    }, 2000);
+  }};
 
   const cancelDelete = () => {
     setShowConfirm(false);
@@ -45,7 +42,9 @@ const NavbarBtn = (props) => {
     <div>
 
       {!user && (<Link to="/login"  className={`max-sm:py-2 max-sm:px-6 max-sm:rounded-none sm:py-2 sm:px-4 bg-${!user ? props.data.data.btnStyle.btnColor : "transparent"} px-6 py-4 text-white rounded-lg ${!user ? "hover:bg-headerColorHover" : " "}`}>{props.data.data.btnName}</Link>)}
-
+      { loading &&(
+        <Loader message={msg} duration={2000} />
+      )}
         {user && (
           <div
             className="rounded-full w-10 aspect-square cursor-pointer relative"

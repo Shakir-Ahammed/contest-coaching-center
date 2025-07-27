@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { registerData } from '../data/login&RegisterData';
 import UserForm from '../components/userForm';
 import { useStateContext } from '../context/ContextProvider';
@@ -27,6 +27,7 @@ const RegisterForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setMsg("Registering...");
         if(formData.password.length < 6){
         alert("❌ Password must be 6 charecters");
         setLoading(false);
@@ -38,24 +39,24 @@ const RegisterForm = () => {
         setLoading(false);
         return;
         }
-        
-        else{
-        setMsg("Registering...");
-        setLoading(true);
-
 
         try {
 
         // Then call your register API
         const res = await api.post("/register", formData);
-
-        if (res.status === 201 || res.status === 200) {
+        if (res.data.data.user.mail_verify === false) {
+            setMsg("❌ Registration failed. Please enter a verified email");
+            setTimeout(() => {
+                setMsg("");
+                setLoading(false);
+            }, 3000);
+        }if (res.data.data.user.mail_verify === true) {
             setMsg(res.data.message);
             setTimeout(() => {
                 navigate("/login");
                 setMsg("");
                 setLoading(false);
-            }, 2000);
+            }, 3000);
         }
         } catch (err) {
             let mainMsg = "Registration failed";
@@ -80,12 +81,16 @@ const RegisterForm = () => {
 
             alert(detailMsg || "Please check your input");
             }
-        }
 
     };
+
+    useEffect(() => {
+        setMsg("");
+        setLoading(false);
+      }, [setMsg]);
   return (
     <div className='flex justify-center items-center w-full xl:h-auto p-3 flex-wrap space-y-4 relative'>
-        {loading && <Loader message={msg} duration={2000} />}
+        {loading && <Loader message={msg} duration={3000} />}
         <h1 className='w-full text-xl font-semibold text-headerColor text-center'>Register</h1>
       <UserForm data={registerData} handleChange={handleChange} handleSubmit={handleSubmit}/>
     </div>

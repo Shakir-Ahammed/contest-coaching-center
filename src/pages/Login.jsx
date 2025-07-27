@@ -31,7 +31,6 @@ const Login = () => {
       user && setUser(user);
       access_token && localStorage.setItem("access_token", access_token);
       refresh_token && localStorage.setItem("refresh_token", refresh_token);
-      user && localStorage.setItem("user", JSON.stringify(user));
 
       // শুধু message এবং progress animation শেষ হলে hide
       setTimeout(() => {
