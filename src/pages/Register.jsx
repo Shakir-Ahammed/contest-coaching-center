@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { registerData } from '../data/login&RegisterData';
-import UserForm from '../components/userForm';
+import UserForm from '../components/UserForm';
 import { useStateContext } from '../context/ContextProvider';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api/axiosInstance';
+import api, { getCsrfToken } from '../../api/axiosInstance';
 import { useLoader } from '../context/LoaderContext';
 import Loader from '../components/Loader';
 
@@ -29,7 +29,7 @@ const RegisterForm = () => {
         setLoading(true);
         setMsg("Registering...");
         if(formData.password.length < 6){
-        alert("❌ Password must be 6 charecters");
+        alert("❌ Password must be 6 characters");
         setLoading(false);
         return;
         }
@@ -42,18 +42,35 @@ const RegisterForm = () => {
 
         try {
 
-        // Then call your register API
-        const res = await api.post("/register", formData);
-        if (res.data.data.user.mail_verify === false) {
-            setMsg("❌ Registration failed. Please enter a verified email");
+        // Get CSRF cookie first (required for Sanctum SPA auth)
+        await getCsrfToken();
+        
+        // Call register API with correct endpoint
+        const res = await api.post("/auth/register", formData);
+        
+        if (res.data.success) {
+            const user = res.data.data?.user;
+            
+            if (user && user.mail_verify === false) {
+                // Registration succeeded but email not yet verified
+                setMsg("✅ Registration successful! Please check your email to verify your account.");
+                setTimeout(() => {
+                    navigate("/login");
+                    setMsg("");
+                    setLoading(false);
+                }, 3000);
+            } else {
+                // Registration succeeded and email is verified (or no verification needed)
+                setMsg(res.data.message || "✅ Registration successful!");
+                setTimeout(() => {
+                    navigate("/login");
+                    setMsg("");
+                    setLoading(false);
+                }, 3000);
+            }
+        } else {
+            setMsg(res.data.message || "Registration failed");
             setTimeout(() => {
-                setMsg("");
-                setLoading(false);
-            }, 3000);
-        }if (res.data.data.user.mail_verify === true) {
-            setMsg(res.data.message);
-            setTimeout(() => {
-                navigate("/login");
                 setMsg("");
                 setLoading(false);
             }, 3000);
@@ -79,7 +96,7 @@ const RegisterForm = () => {
 
             setTimeout(() => setMsg(""), 3000);
 
-            alert(detailMsg || "Please check your input");
+            alert(detailMsg || mainMsg);
             }
 
     };

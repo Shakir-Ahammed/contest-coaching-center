@@ -13,7 +13,7 @@ const Verify = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const res = await api.get(`/email/verify/${id}/${hash}`);
+        const res = await api.get(`/auth/email/verify/${id}/${hash}`);
         if (res.status === 200) {
           setStatus("success");
         } else {

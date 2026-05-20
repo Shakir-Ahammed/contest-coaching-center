@@ -4,7 +4,7 @@ import { DCourse, DSlider, Help, Logout, Notice, Schedule, Settings, Student, Te
 import { Admission, Branches, Courses, Login, Register, Verify } from "../pages";
 
 export let mainPageRoutes = [
-    {route: <Courses/>, path: "courses"}, {route: <Admission/>, path: "admission"},{route: <GalleryMain/>, path: "gallery"}, {route: <Branches/>, path: "branches"},{route: <AllSuccessCard/>, path: "all-success"}, {route: <CourseDetails/>, path:"/courses/:id"}, {route: <Login/>, path: "login"}, {route: <Register/>, path: "register"}, {route: <Verify/>, path: "verify"}, {route: <Error/>, path: "*"},
+    {route: <Courses/>, path: "courses"}, {route: <Admission/>, path: "admission"},{route: <GalleryMain/>, path: "gallery"}, {route: <Branches/>, path: "branches"},{route: <AllSuccessCard/>, path: "all-success"}, {route: <CourseDetails/>, path:"/courses/:id"}, {route: <Login/>, path: "login"}, {route: <Register/>, path: "register"}, {route: <Verify/>, path: "verify/:id/:hash"}, {route: <Error/>, path: "*"},
 ];
 
 export let dashboardPageRoutes = [
